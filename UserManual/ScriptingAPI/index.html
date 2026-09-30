@@ -2464,14 +2464,18 @@
 </ul>
 <hr />
 <h2 id="prefab">Prefab 实例化</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">Entity</span><span class="w"> </span><span class="n">enemy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Entity</span><span class="p">.</span><span class="n">Instantiate</span><span class="p">(</span><span class="s">"prefabs/Enemy.hprefab"</span><span class="p">);</span>
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">enemy</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">null</span><span class="p">)</span>
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">    </span><span class="n">enemy</span><span class="p">.</span><span class="n">Position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Vector3</span><span class="p">(</span><span class="mf">5.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">);</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">Entity</span><span class="w"> </span><span class="n">turret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Entity</span><span class="p">.</span><span class="n">Instantiate</span><span class="p">(</span><span class="s">"prefabs/Turret.hprefab"</span><span class="p">);</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">turret</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">null</span><span class="p">)</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">    </span><span class="n">turret</span><span class="p">.</span><span class="n">SetParent</span><span class="p">(</span><span class="n">mountPoint</span><span class="p">,</span><span class="w"> </span><span class="k">false</span><span class="p">);</span>
 </code></pre></div>
 <ul>
 <li>路径相对于 <strong><code>assets/</code></strong>。</li>
-<li>仅在 <strong>Play</strong> 模式会为脚本调用 <code>OnCreate</code>。</li>
-<li>编辑器中：Hierarchy 右键 <strong>Save as Prefab</strong>，或将 <code>.hprefab</code> 拖入 Viewport 实例化。</li>
+<li>保存的是选中实体及其全部后代。实例是一次性拷贝，场景不记录来源 Prefab。</li>
+<li><code>Instantiate</code> 返回根实体，根没有父节点。<code>SetParent(parent, false)</code> 保留 Prefab 根上的本地变换。<code>OnCreate</code> 发生在这次 <code>SetParent</code> 之前。</li>
+<li>运行时会为子树里每个带脚本的实体调用 <code>OnCreate</code>（先根后后代），并补建物理、播放 <code>PlayOnStart</code>、重置精灵动画。</li>
+<li>编辑器中：仅 <strong>Edit</strong> 模式可 Hierarchy 右键 <strong>Save as Prefab</strong>，或将 <code>.hprefab</code> 拖入 Viewport。拖入记成一步 Undo。Play / Simulate 下这两项不可用。</li>
+<li>只读取带 <code>Entities</code> 序列的 <code>.hprefab</code>。旧的单实体根映射需要重新保存。</li>
+<li>目标场景已经有 Canvas 时，不能再实例化一份带 Canvas 的 Prefab。控件预制体从控件自己的根保存，再挂到场景 Canvas 上。</li>
 </ul>
 <hr />
 <h2 id="time">Time</h2>
